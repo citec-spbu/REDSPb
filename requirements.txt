@@ -3,3 +3,9 @@ pandas
 scipy
 scikit-learn
 tqdm
+
+
+# test block
+black
+isort
+flake8
