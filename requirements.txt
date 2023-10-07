@@ -3,6 +3,7 @@ pandas
 scipy
 scikit-learn
 tqdm
+Pillow==9.5.0
 
 
 # test block
