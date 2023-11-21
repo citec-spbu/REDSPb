@@ -6,7 +6,6 @@ from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 # from sklearn.model_selection import train_test_split
-import psutil
 from keras.layers import Conv2D, Flatten, Dense, Conv2DTranspose, Input, Conv1D, InputLayer, BatchNormalization
 from keras.models import Model, Sequential
 # from keras.optimizers import Adam
@@ -46,27 +45,27 @@ del Y
 # Архитектура сети
 input_shape = (10, 100, 1)
 model = Sequential([
-    Conv2D(32, (3,3), activation='relu', input_shape=input_shape),
+    Conv2D(32, (3,3), activation='relu', input_shape=input_shape, padding='same'),
     MaxPooling2D((2, 2), strides=1, padding='same'),
     Conv2D(64, (3,3), padding='same', activation='relu'),
     MaxPooling2D((2, 2), strides=1, padding='same'),
-    Conv2D(1, kernel_size=(3, 3), activation='linear'),
-    Flatten(),
-    Dense(1000, activation='linear'),
+    Conv2D(1, kernel_size=(3, 3), activation='linear', padding='same'),
+    # Flatten(),
+    # Dense(1000, activation='linear'),
     # Dense(10,  activation='softmax')
 ])
 
 model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.001))
-model.fit(x_train, y_train.reshape((len(y_train), 1000)), batch_size=512, epochs=3, validation_split=0.2)
+model.fit(x_train, y_train, batch_size=512, epochs=3, validation_split=0.2)
 
-predicted_Y = model.predict(x_test).reshape((len(y_test), 10, 100))
+predicted_Y = model.predict(x_test)
 
 
 def reconstruct_matrix_super(matrix_target_shape, y, n=10, step_n=10, step_m=10):
     res = []
     i = 0
     while len(y) > matrix_target_shape[1]*(i+1):
-        layer = y[matrix_target_shape[1]*i:matrix_target_shape[1]*(i+1):step_m]
+        layer = y[matrix_target_shape[1]*i:matrix_target_shape[1]*(i+1):y.shape[2]//step_m]
         layer = np.concatenate(layer, axis=1)
         res.append(layer)
         i += n // step_n
