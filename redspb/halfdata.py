@@ -7,5 +7,5 @@ split_index = len(df) // 2
 df1 = df.iloc[:split_index]
 df2 = df.iloc[split_index:]
 
-df1.to_csv(path_to_file, index=False)
-df2.to_csv(path_to_file, index=False)
+df1.to_csv("D:\practice\part1.csv", index=False)
+df2.to_csv("D:\practice\part2.csv", index=False)
