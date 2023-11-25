@@ -49,7 +49,7 @@ def generate_dataset(dataset: pd.DataFrame, n: int = 10, m: int = 100, step_n: i
 
     if info:
         print('Memory size X Y:', x.nbytes / 2**30, 'GB, ', y.nbytes / 2**30, 'GB')
-    return x, y, (counter_0, counter_1)
+    return x, y, (counter_0, counter_1), scaler if scale else None
 
 
 # df = pd.read_csv("/Users/aleksandrallahverdan/Downloads/data1.csv")

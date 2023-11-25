@@ -15,7 +15,7 @@ from tensorflow.keras.optimizers.legacy import Adam
 df = pd.read_csv("/Users/aleksandrallahverdan/Downloads/data_res_2_half_upd.csv")
 df['numbers'] = df['numbers'].map(lambda x: list(map(float, x[1:-1].split(','))))
 df['target'] = df['target'].map(lambda x: list(map(float, x.split(','))))
-X, Y, true_raw_shape = generate_dataset(df, info=True)
+X, Y, true_raw_shape, scaler = generate_dataset(df, info=True)
 del df
 
 def train_test_split(X, Y, test_size=0.2):
