@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from keras.src.layers import MaxPooling2D
+from keras.src.layers import MaxPooling2D, LeakyReLU, Dropout
 from matplotlib import widgets
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
@@ -12,25 +12,35 @@ from keras.models import Model, Sequential
 from form_dataset import generate_dataset
 from tensorflow.keras.optimizers.legacy import Adam
 
-df = pd.read_csv("/Users/aleksandrallahverdan/Downloads/data_res_2_half_upd.csv")
+# df = pd.read_csv("/Users/aleksandrallahverdan/Downloads/data_res_2_half_upd.csv")
+df = pd.read_csv("data_1_marked.csv")
 df['numbers'] = df['numbers'].map(lambda x: list(map(float, x[1:-1].split(','))))
 df['target'] = df['target'].map(lambda x: list(map(float, x.split(','))))
 X, Y, true_raw_shape, scaler = generate_dataset(df, info=True)
+
+df_test = pd.read_csv("C:\\Users\\Liza\\Downloads\\data1\\data2.csv")
+df_test['numbers'] = df_test['numbers'].map(lambda x: list(map(float, x[1:-1].split(','))))
+df_test['target'] = df['target']#.map(lambda x: list(map(float, x.split(','))))
+X_, Y_, true_raw_shape_, scaler_ = generate_dataset(df_test, info=True, scale=True, given_scaler=scaler)
 del df
+# del df_test
+del Y_
+
 
 def train_test_split(X, Y, test_size=0.2):
     assert 0 < test_size < 1
     n = int(X.shape[0] * (1-test_size))
     return X[:n], X[n:], Y[:n], Y[n:]
 
-x_train,x_test,y_train,y_test=train_test_split(X,Y,test_size=0.4)
-print(x_train.shape)
-print(x_test.shape)
-print(y_train.shape)
-print(y_test.shape)
 
-del X
-del Y
+# x_train,x_test,y_train,y_test=train_test_split(X,Y,test_size=0.4)
+# print(x_train.shape)
+# print(x_test.shape)
+# print(y_train.shape)
+# print(y_test.shape)
+
+# del X
+# del Y
 
 
 # def min_max_scaler(arr: np.ndarray):
@@ -44,21 +54,21 @@ del Y
 
 # Архитектура сети
 input_shape = (10, 100, 1)
-model = Sequential([
-    Conv2D(32, (3,3), activation='relu', input_shape=input_shape, padding='same'),
-    MaxPooling2D((2, 2), strides=1, padding='same'),
-    Conv2D(64, (3,3), padding='same', activation='relu'),
-    MaxPooling2D((2, 2), strides=1, padding='same'),
-    Conv2D(1, kernel_size=(3, 3), activation='linear', padding='same'),
-    # Flatten(),
-    # Dense(1000, activation='linear'),
-    # Dense(10,  activation='softmax')
-])
-
+inputs = Input(shape=input_shape)
+x = Conv2D(32, kernel_size=(5, 5), padding='same')(inputs)
+x = LeakyReLU(alpha=0.1)(x)
+x = Dropout(0.2)(x)
+x = Conv2D(64, kernel_size=(5, 5), padding='same')(x)
+x = LeakyReLU(alpha=0.1)(x)
+x = Dropout(0.2)(x)
+outputs = Conv2D(1, kernel_size=(3, 3), activation='linear', padding='same')(x)
+model = Model(inputs=inputs, outputs=outputs)
 model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.001))
-model.fit(x_train, y_train, batch_size=512, epochs=3, validation_split=0.2)
+model.fit(X, Y, batch_size=512, epochs=5, validation_split=0.1)
 
-predicted_Y = model.predict(x_test)
+predicted_Y = model.predict(X_)
+del X
+del Y
 
 
 def reconstruct_matrix_super(matrix_target_shape, y, n=10, step_n=10, step_m=10):
@@ -73,9 +83,7 @@ def reconstruct_matrix_super(matrix_target_shape, y, n=10, step_n=10, step_m=10)
     return res
 
 
-
-
-rec1 = reconstruct_matrix_super(true_raw_shape, x_test)
+rec1 = reconstruct_matrix_super(true_raw_shape, X_)
 rec2 = reconstruct_matrix_super(true_raw_shape, predicted_Y)
 
 
@@ -115,3 +123,7 @@ def plot_with_slider(data):
 # plt.show()
 
 plot_with_slider(rec2)
+
+df_mask = pd.DataFrame({'predict_nn': rec2.tolist()})
+df_mask['predict_nn'] = df_mask['predict_nn'].apply(lambda x: str(x)[1:-1])
+df_mask.to_csv('data_2_test_predict+mask.csv')

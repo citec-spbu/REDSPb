@@ -4,7 +4,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, Ma
 from tqdm import tqdm
 
 
-def generate_dataset(dataset: pd.DataFrame, n: int = 10, m: int = 100, step_n: int = 10, step_m: int = 10, info=True, scale: bool = True):
+def generate_dataset(dataset: pd.DataFrame, n: int = 10, m: int = 100, step_n: int = 10, step_m: int = 10, info=True, scale: bool = True, given_scaler=None):
     """
     Create dataset from raw df with sliding window. MinMaxScale numbers
     :param dataset: df
@@ -23,9 +23,14 @@ def generate_dataset(dataset: pd.DataFrame, n: int = 10, m: int = 100, step_n: i
     matrix_target = matrix_target[:-(mkm_0 % n), :-(mkm_1 % m)]
 
     if scale:
-        scaler = MaxAbsScaler()
-        matrix_numbers = scaler.fit_transform(matrix_numbers)
-        print(matrix_numbers.min(), matrix_numbers.max())
+        if given_scaler is not None:
+            matrix_numbers = given_scaler.transform(matrix_numbers)
+            print(matrix_numbers.min(), matrix_numbers.max())
+            scaler = given_scaler
+        else:
+            scaler = MaxAbsScaler()
+            matrix_numbers = scaler.fit_transform(matrix_numbers)
+            print(matrix_numbers.min(), matrix_numbers.max())
     if info:
         print('Memory size was:', matrix_numbers.nbytes / 2**30, 'GB, ', matrix_target.nbytes / 2**30, 'GB')
 
