@@ -371,9 +371,9 @@ for i in range(len(matrix)):
 #     for j in range(11446, 11469):
 #         my_matrix[i][j] = 1
 my_matrix[:, 11440:11479] = get_updated_matrix(matrix[:, 11440:11479], -10, 30, -10, 1, 3)# done
-for i in range(len(matrix)):
-    for j in range(11558, 11582):
-        my_matrix[i][j] = 1
+# for i in range(len(matrix)):
+#     for j in range(11558, 11582):
+#         my_matrix[i][j] = 1
 my_matrix[:, 11650:11750] = get_updated_matrix(matrix[:, 11650:11750], -9, 30, -9, 1, 3) # done
 for i in range(len(matrix)):
     for j in range(11677, 11688):
@@ -662,7 +662,7 @@ view_both(matrix_numbers, my_matrix)
 my_matrix = my_matrix.astype(int)
 df['target'] = my_matrix.tolist()
 df['target'] = df['target'].apply(lambda x: str(x)[1:-1])
-df[['date', 'time', 'step1', 'step2', 'step3', 'step4', 'numbers', 'target']].to_csv('data1_marked_experiment.csv')
+df[['date', 'time', 'step1', 'step2', 'step3', 'step4', 'numbers', 'target']].to_csv('data1_marked_experiment2.csv')
 
 
 

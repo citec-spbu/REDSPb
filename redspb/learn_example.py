@@ -13,7 +13,7 @@ from form_dataset import generate_dataset
 from tensorflow.keras.optimizers.legacy import Adam
 
 # df = pd.read_csv("/Users/aleksandrallahverdan/Downloads/data_res_2_half_upd.csv")
-df = pd.read_csv("data1_marked_experiment.csv")
+df = pd.read_csv("data1_marked_experiment2.csv")
 df['numbers'] = df['numbers'].map(lambda x: list(map(float, x[1:-1].split(','))))
 df['target'] = df['target'].map(lambda x: list(map(float, x.split(','))))
 X, Y, true_raw_shape, scaler = generate_dataset(df, info=True)
@@ -81,7 +81,7 @@ model = Sequential([
     # Dense(10,  activation='softmax')
 ])
 model.compile(loss='mean_squared_error', optimizer=Adam(lr=0.001))
-model.fit(X, Y, batch_size=512, epochs=3, validation_split=0.1)
+model.fit(X, Y, batch_size=512, epochs=6, validation_split=0.1)
 predicted_Y = model.predict(X_)
 del X
 del Y
@@ -137,9 +137,11 @@ def plot_with_slider(data):
 # # Отображение графиков
 # plt.tight_layout()  # Автоматическое расположение подграфиков
 # plt.show()
-
+# print('rec2: ', rec2)
 plot_with_slider(rec2)
 
 df_mask = pd.DataFrame({'predict_nn': rec2.tolist()})
+df_mask['predict_nn'] = df_mask['predict_nn'].map(lambda x: list(map(lambda x_s: round(x_s[0], 5), x)))
 df_mask['predict_nn'] = df_mask['predict_nn'].apply(lambda x: str(x)[1:-1])
-df_mask.to_csv('data_2_test_predict_new.csv')
+df_mask.to_csv('data_2_test_predict2_1.csv')
+model.save('model2_1')
